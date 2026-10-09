@@ -1,19 +1,19 @@
 # yaml-language-server: $schema=https://blue-build.org
 version: 1
 name: bazzite-kineticwe
-description: Versión definitiva con entorno de mosaico KineticWE y Noctalia nativos.
+description: Versión definitiva con entorno KineticWE, Noctalia, usuario inyectado y Fish.
 
-base-image: ghcr.io/ublue-os/bazzite
+base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: stable
 
 modules:
-  # 1. INYECTAMOS EL REPOSITORIO COPR DE FORMA NATIVA (Obligatorio para Fedora 44)
+  # 1. Activamos los repositorios oficiales de Don
   - type: copr
     enable:
       - theblackdon/kineticwe
       - theblackdon/noctalia
 
-  # 2. INSTALAMOS LOS PAQUETES DIRECTAMENTE DESDE EL MOTOR DEL SISTEMA
+  # 2. Instalamos los binarios del entorno en el corazón de la ISO
   - type: rpm-ostree
     install:
       - noctalia
@@ -21,7 +21,25 @@ modules:
       - kitty
       - fish
       - dolphin
-      - mpvpaper    # ¡Ya lo dejamos metido para tu futuro fondo animado!
+      - mpvpaper
 
-  # 3. FORZAMOS LAS CONFIGURACIONES DE INICIO USANDO EL MÓDULO DE COMANDOS SEGURO
-  - type: signing
+  # 3. MÓDULO MAESTRO DE INYECCIÓN DE USUARIO (Al final de la receta)
+  - type: script
+    snippets:
+      - |
+        # Crear la estructura de la carpeta personal de forma segura en /var/home
+        mkdir -p /var/home/inhumano
+        
+        # Registrar el usuario en el sistema con Fish por defecto
+        useradd -d /var/home/inhumano -M -G wheel -s /usr/bin/fish inhumano
+        
+        # Configurar la contraseña temporal '1234'
+        echo "inhumano:1234" | chpasswd
+        
+        # Asignar los permisos del esqueleto del sistema a su nueva casa
+        cp -r /etc/skel/. /var/home/inhumano/
+        chown -R inhumano:inhumano /var/home/inhumano
+        chmod 700 /var/home/inhumano
+        
+        # Forzar a Fish como la shell de useradd global
+        sed -i 's/\/bin\/bash/\/usr\/bin\/fish/g' /etc/default/useradd
