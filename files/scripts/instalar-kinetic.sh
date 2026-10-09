@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -ox pipefail
 
-# 1. Inyectamos los repositorios Copr oficiales
-curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://fedorainfracloud.org
-curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://fedorainfracloud.org
+# 1. Inyectamos los repositorios Copr con la URL oficial y su ruta larga completa
+curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://copr.fedorainfracloud.org/coprs/theblackdon/kineticwe/repo/fedora-40/theblackdon-kineticwe.repo
 
-# 2. Ejecutamos la sustitución atómica estilo Don
-rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:theblackdon:kineticwe kwin kwin-common kwin-libs kglobalacceld kdecoration
+curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-40/lionheartp-Hyprland.repo
+
+# 2. Ejecutamos la sustitución atómica (Sin kdecoration, que causaba el fallo de antes)
+rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:theblackdon:kineticwe kwin kwin-common kwin-libs kglobalacceld
 
 # 3. Forzar a Fish como la shell predeterminada del sistema
 sed -i 's/\/bin\/bash/\/usr\/bin\/fish/g' /etc/default/useradd
