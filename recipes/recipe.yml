@@ -1,24 +1,27 @@
 # yaml-language-server: $schema=https://blue-build.org
 version: 1
 name: bazzite-kineticwe
-description: Imagen estilo 'Donzzite' de Bazzite con el entorno KineticWE, Kitty y Fish.
+description: Versión definitiva con entorno de mosaico KineticWE y Noctalia nativos.
 
-base-image: ghcr.io/ublue-os/bazzite-nvidia
+base-image: ghcr.io/ublue-os/bazzite
 image-version: stable
 
 modules:
-  # 1. EJECUCIÓN DEL SCRIPT (Sintaxis oficial homologada de BlueBuild)
-  - type: script
-    scripts:
-      - instalar-kinetic.sh
+  # 1. INYECTAMOS EL REPOSITORIO COPR DE FORMA NATIVA (Obligatorio para Fedora 44)
+  - type: copr
+    enable:
+      - theblackdon/kineticwe
+      - theblackdon/noctalia
 
-  # 2. INSTALACIÓN NATIVA DE LAS APLICACIONES DIARIAS
+  # 2. INSTALAMOS LOS PAQUETES DIRECTAMENTE DESDE EL MOTOR DEL SISTEMA
   - type: rpm-ostree
     install:
       - noctalia
+      - kineticwe
       - kitty
       - fish
       - dolphin
-      
-  # 3. MÓDULO DE VALIDACIÓN Y COSIGN (Esto le dice a BlueBuild que prepare la infraestructura de la ISO)
+      - mpvpaper    # ¡Ya lo dejamos metido para tu futuro fondo animado!
+
+  # 3. FORZAMOS LAS CONFIGURACIONES DE INICIO USANDO EL MÓDULO DE COMANDOS SEGURO
   - type: signing
