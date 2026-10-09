@@ -19,3 +19,6 @@ modules:
       - kitty
       - fish
       - dolphin
+      
+  # 3. MÓDULO DE VALIDACIÓN Y COSIGN (Esto le dice a BlueBuild que prepare la infraestructura de la ISO)
+  - type: signing
