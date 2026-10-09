@@ -1,43 +1,13 @@
 # yaml-language-server: $schema=https://blue-build.org
 version: 1
 name: bazzite-kineticwe
-description: Versión definitiva con entorno KineticWE forzado sin bloqueos de dependencias.
+description: Versión definitiva blindada con entorno KineticWE nativo y libre de conflictos.
 
 base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: stable
 
 modules:
-  # 1. PURGA DE KDEclásico E INYECCIÓN DE KINETICWE / NOCTALIA
+  # 1. LLAMAMOS AL SCRIPT SEGURO EXTERNO
   - type: script
-    snippets:
-      - |
-        # Descargar los ficheros .repo corregidos de Don para Fedora 44
-        curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://copr.fedorainfracloud.org/coprs/theblackdon/kineticwe/repo/fedora-44/theblackdon-kineticwe.repo
-        curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland.repo
-        
-        # Eliminamos de raíz los paquetes conflictivos (Sin opciones obsoletas)
-        rpm-ostree override remove kdecoration kglobalacceld
-        
-        # Instalar todo tu ecosistema personalizado de una sola vez
-        rpm-ostree install --allow-inactive noctalia kineticwe kitty fish dolphin mpvpaper
-
-  # 2. BLOQUE SEGURO DE CREACIÓN DE TU CASA /VAR/HOME/INHUMANO
-  - type: script
-    snippets:
-      - |
-        # Configurar la carpeta personal física
-        mkdir -p /var/home/inhumano
-        
-        # Registrar tu cuenta con Fish por defecto
-        useradd -d /var/home/inhumano -M -G wheel -s /usr/bin/fish inhumano
-        
-        # Inyectar tu contraseña temporal '1234'
-        echo "inhumano:1234" | chpasswd
-        
-        # Copiar el esqueleto y reparar permisos de administrador
-        cp -r /etc/skel/. /var/home/inhumano/
-        chown -R inhumano:inhumano /var/home/inhumano
-        chmod 700 /var/home/inhumano
-        
-        # Cambiar el esqueleto global de la terminal a Fish
-        sed -i 's/\/bin\/bash/\/usr\/bin\/fish/g' /etc/default/useradd
+    scripts:
+      - instalar-sistema.sh
