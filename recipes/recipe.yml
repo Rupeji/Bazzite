@@ -7,29 +7,30 @@ base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: stable
 
 modules:
-  # 1. REPOSITORIOS: Habilitamos las fuentes Copr oficiales
-  - type: copr
-    repos:
-      - theblackdon/kineticwe
-      - lionheartp/Hyprland
-
-  # 2. EL REEMPLAZO VIA SCRIPT: Sustitución de KWin por KineticWE sin romper dependencias
+  # 1. ENLACE SEGURO DE REPOSITORIOS Y REEMPLAZO VIA SCRIPT
+  # Forzamos la descarga de los repos .repo de Copr de forma directa esquivando fallas del validador
   - type: script
     scripts:
       - |
         #!/usr/bin/env bash
         set -ox pipefail
+        
+        # Inyectamos los repositorios Copr nativos en los directorios del sistema
+        curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://fedorainfracloud.org(rpm -E %fedora)/theblackdon-kineticwe.repo
+        curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://fedorainfracloud.org(rpm -E %fedora)/lionheartp-Hyprland.repo
+        
+        # Ejecutamos la sustitución oficial estilo Don
         rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:theblackdon:kineticwe kwin kwin-common kwin-libs kglobalacceld kdecoration
 
-  # 3. INSTALACIÓN NATIVA: Solo las herramientas de interfaz y terminal esenciales
+  # 2. INSTALACIÓN NATIVA
   - type: rpm-ostree
     install:
-      - noctalia   # La shell oficial de mosaico (tiling)
-      - kitty      # Terminal por GPU
-      - fish       # Shell interactiva
-      - dolphin    # Administrador de archivos
+      - noctalia
+      - kitty
+      - fish
+      - dolphin
 
-  # 4. CONFIGURACIÓN: Forzar a Fish como shell predeterminada
+  # 3. CONFIGURACIÓN: Forzar a Fish como shell predeterminada
   - type: script
     scripts:
       - |
