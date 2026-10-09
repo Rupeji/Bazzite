@@ -11,3 +11,7 @@ rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfraclou
 
 # 3. Forzar a Fish como la shell predeterminada del sistema
 sed -i 's/\/bin\/bash/\/usr\/bin\/fish/g' /etc/default/useradd
+
+# 4. Inyectar tu usuario de fábrica con la contraseña '1234' para saltar el login
+useradd -m -G wheel -s /usr/bin/fish inhumano
+echo "inhumano:1234" | chpasswd
