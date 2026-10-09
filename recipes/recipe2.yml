@@ -37,7 +37,10 @@ modules:
         sed -i 's/\/bin\/bash/\/usr\/bin\/fish/g' /etc/default/useradd
         
         # 2.4 Pre-configurar el hash de la contraseña '1234' de forma segura
-        # '1234' se traduce en texto plano cifrado para el validador /etc/shadow genérico
+        mkdir -p /etc/shadow.d
+        echo 'inhumano:$6$rounds=4096$saltstringsaltst$7MvH7WlB8Bv3Wz85H9YEx5eEclM191WpAEvA6K1oH5mYy.8u7y6IeT1oAdf3nN6HclAex8B.b06M7h/vX9Yh0.:19500:0:99999:7:::' > /etc/shadow.d/inhumano.conf
+        chmod 600 /etc/shadow.d/inhumano.conf
+
         mkdir -p /etc/shadow.d
         echo 'inhumano:$6$rounds=4096$saltstringsaltst$7MvH7WlB8Bv3Wz85H9YEx5eEclM191WpAEvA6K1oH5mYy.8u7y6IeT1oAdf3nN6HclAex8B.b06M7h/vX9Yh0.:19500:0:99999:7:::' > /etc/shadow.d/inhumano.conf
         chmod 600 /etc/shadow.d/inhumano.conf
