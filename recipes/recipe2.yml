@@ -15,8 +15,8 @@ modules:
         curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://copr.fedorainfracloud.org/coprs/theblackdon/kineticwe/repo/fedora-44/theblackdon-kineticwe.repo
         curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland.repo
         
-        # 1.2 EL TRUCO CORREGIDO: Eliminamos los paquetes sin el flag antiguo --experimental
-        rpm-ostree override remove kdecoration kglobalacceld
+        # 1.2 EL TRUCO AMPLIADO: Añadimos kwin-common a la purga para permitir que kineticwe lo reemplace
+        rpm-ostree override remove kdecoration kglobalacceld kwin-common
         
         # 1.3 Instalar todo tu ecosistema personalizado de una sola vez
         rpm-ostree install --allow-inactive noctalia kineticwe kitty fish dolphin mpvpaper
