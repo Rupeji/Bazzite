@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://blue-build.org
 version: 1
 name: bazzite-kineticwe
@@ -8,33 +7,31 @@ base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: stable
 
 modules:
-  # 1. REPOSITORIOS: Fuentes Copr oficiales para KineticWE y Noctalia
+  # 1. REPOSITORIOS: Habilitamos las fuentes Copr
   - type: copr
     repos:
       - theblackdon/kineticwe
       - lionheartp/Hyprland
 
-  # 2. EL REEMPLAZO: Sustitución de KWin nativo para evitar bloqueos
+  # 2. EL REEMPLAZO (Sintaxis Oficial de BlueBuild):
+  # Indicamos al sistema de qué repositorio Copr provienen los reemplazos de KWin
   - type: rpm-ostree
     replace:
-      - package: kwin
-        with: kineticwe
-      - package: kwin-common
-        with: kineticwe
-      - package: kwin-libs
-        with: kineticwe
-      - package: kglobalacceld
-        with: kineticwe
-      - package: kdecoration
-        with: kineticwe
+      - from-repo: copr:copr.fedorainfracloud.org:theblackdon:kineticwe
+        packages:
+          - kwin
+          - kwin-common
+          - kwin-libs
+          - kglobalacceld
+          - kdecoration
 
-  # 3. PURGA DE BAZZITE: Limpieza de herramientas de fábrica como hace Don
+  # 3. PURGA DE BAZZITE
   - type: rpm-ostree
     remove:
       - bazzite-portal
       - bazzite-updater
 
-  # 4. INSTALACIÓN NATIVA: Tus herramientas diarias vía RPM
+  # 4. INSTALACIÓN NATIVA
   - type: rpm-ostree
     install:
       - noctalia
@@ -44,7 +41,7 @@ modules:
       - obs-studio
       - discord
 
-  # 5. CONFIGURACIÓN: Forzar a Fish como shell predeterminada en el sistema
+  # 5. CONFIGURACIÓN: Forzar a Fish como shell predeterminada
   - type: script
     scripts:
       - |
