@@ -12,8 +12,8 @@ modules:
     snippets:
       - |
         # Añadir repositorios oficiales de Don para Fedora 44 de forma directa
-        curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://fedorainfracloud.org
-        curl -Lo /etc/yum.repos.d/_copr_theblackdon-noctalia.repo https://fedorainfracloud.org
+        curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://copr.fedorainfracloud.org/coprs/theblackdon/kineticwe/repo/fedora-44/theblackdon-kineticwe.repo
+        curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland.repo
 
   # 2. SELECCIONAMOS LOS PAQUETES QUE EL MOTOR COPIARÁ EN LAS CAPAS DE LA ISO
   - type: rpm-ostree
