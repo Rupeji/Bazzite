@@ -7,15 +7,18 @@ base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: stable
 
 modules:
-  # 1. INYECTAMOS REPOSITORIOS E INSTALAMOS LOS PAQUETES CON ANULACIÓN DE CONFLICTOS
+  # 1. PURGA DE KDEclásico E INYECCIÓN DE KINETICWE / NOCTALIA
   - type: script
     snippets:
       - |
-        # Descargar los ficheros .repo corregidos de Don
+        # Descargar los ficheros .repo corregidos de Don para Fedora 44
         curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://copr.fedorainfracloud.org/coprs/theblackdon/kineticwe/repo/fedora-44/theblackdon-kineticwe.repo
         curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland.repo
         
-        # Forzar la instalación de los paquetes pisando los conflictos de kdecoration
+        # EL TRUCO: Eliminamos los dos paquetes conflictivos de KDE antes de instalar
+        rpm-ostree override remove kdecoration kglobalacceld --experimental
+        
+        # Instalar todo tu ecosistema personalizado de una sola vez
         rpm-ostree install --allow-inactive noctalia kineticwe kitty fish dolphin mpvpaper
 
   # 2. BLOQUE SEGURO DE CREACIÓN DE TU CASA /VAR/HOME/INHUMANO
