@@ -15,8 +15,8 @@ modules:
         curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://copr.fedorainfracloud.org/coprs/theblackdon/kineticwe/repo/fedora-44/theblackdon-kineticwe.repo
         curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland.repo
         
-        # EL TRUCO: Eliminamos los dos paquetes conflictivos de KDE antes de instalar
-        rpm-ostree override remove kdecoration kglobalacceld --experimental
+        # Eliminamos de raíz los paquetes conflictivos (Sin opciones obsoletas)
+        rpm-ostree override remove kdecoration kglobalacceld
         
         # Instalar todo tu ecosistema personalizado de una sola vez
         rpm-ostree install --allow-inactive noctalia kineticwe kitty fish dolphin mpvpaper
