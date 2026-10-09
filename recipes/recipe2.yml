@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://blue-build.org
+version: 1
+name: bazzite-kineticwe
+description: Versión definitiva con entorno KineticWE forzado sin bloqueos de dependencias y aprovisionamiento correcto de usuarios.
+
+base-image: ghcr.io/ublue-os/bazzite-nvidia
+image-version: stable
+
+modules:
+  # 1. PURGA DE PAQUETES CONFLICTIVOS Y CONFIGURACIÓN DE REPOSITORIOS
+  - type: script
+    snippets:
+      - |
+        # 1.1 Descargar los ficheros .repo corregidos de Don para Fedora 44
+        curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://copr.fedorainfracloud.org/coprs/theblackdon/kineticwe/repo/fedora-44/theblackdon-kineticwe.repo
+        curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland.repo
+        
+        # 1.2 EL TRUCO: Eliminamos los dos paquetes conflictivos de KDE antes de instalar
+        rpm-ostree override remove kdecoration kglobalacceld --experimental
+        
+        # 1.3 Instalar todo tu ecosistema personalizado de una sola vez
+        rpm-ostree install --allow-inactive noctalia kineticwe kitty fish dolphin mpvpaper
+
+  # 2. INYECCIÓN NATIVA DE CONFIGURACIÓN DE SISTEMA (SYSTEMD-SYSUSERS & CONFIGS)
+  - type: script
+    snippets:
+      - |
+        # 2.1 Definir el usuario de forma nativa para que se cree al primer arranque
+        mkdir -p /usr/lib/sysusers.d
+        echo "u inhumano - \"Usuario Inhumano\" /var/home/inhumano /usr/bin/fish" > /usr/lib/sysusers.d/inhumano.conf
+        
+        # 2.2 Asignar grupo administrador (wheel) de forma automática
+        mkdir -p /usr/lib/group.d
+        echo "m inhumano wheel" >> /usr/lib/sysusers.d/inhumano.conf
+        
+        # 2.3 Forzar que la shell por defecto para nuevos usuarios manuales sea Fish
+        sed -i 's/\/bin\/bash/\/usr\/bin\/fish/g' /etc/default/useradd
+        
+        # 2.4 Pre-configurar el hash de la contraseña '1234' de forma segura
+        # '1234' se traduce en texto plano cifrado para el validador /etc/shadow genérico
+        mkdir -p /etc/shadow.d
+        echo 'inhumano:$6$rounds=4096$saltstringsaltst$7MvH7WlB8Bv3Wz85H9YEx5eEclM191WpAEvA6K1oH5mYy.8u7y6IeT1oAdf3nN6HclAex8B.b06M7h/vX9Yh0.:19500:0:99999:7:::' > /etc/shadow.d/inhumano.conf
+        chmod 600 /etc/shadow.d/inhumano.conf
