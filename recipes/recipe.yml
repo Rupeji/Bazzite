@@ -1,19 +1,21 @@
 # yaml-language-server: $schema=https://blue-build.org
 version: 1
 name: bazzite-kineticwe
-description: Versión definitiva con entorno KineticWE, Noctalia, usuario inyectado y Fish.
+description: Versión definitiva blindada con entorno de mosaico KineticWE y Noctalia.
 
 base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: stable
 
 modules:
-  # 1. Activamos los repositorios oficiales de Don
-  - type: copr
-    enable:
-      - theblackdon/kineticwe
-      - theblackdon/noctalia
+  # 1. EVITAMOS EL MODULO COPR ROTO E INYECTAMOS LOS REPOS NATIVAMENTE POR SCRIPT
+  - type: script
+    snippets:
+      - |
+        # Añadir repositorios oficiales de Don para Fedora 44 de forma directa
+        curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://fedorainfracloud.org
+        curl -Lo /etc/yum.repos.d/_copr_theblackdon-noctalia.repo https://fedorainfracloud.org
 
-  # 2. Instalamos los binarios del entorno en el corazón de la ISO
+  # 2. SELECCIONAMOS LOS PAQUETES QUE EL MOTOR COPIARÁ EN LAS CAPAS DE LA ISO
   - type: rpm-ostree
     install:
       - noctalia
@@ -23,23 +25,23 @@ modules:
       - dolphin
       - mpvpaper
 
-  # 3. MÓDULO MAESTRO DE INYECCIÓN DE USUARIO (Al final de la receta)
+  # 3. BLOQUE SEGURO DE CREACIÓN DE TU CASA /VAR/HOME/INHUMANO
   - type: script
     snippets:
       - |
-        # Crear la estructura de la carpeta personal de forma segura en /var/home
+        # Configurar la carpeta personal física para que no dé fallos de Login Loop
         mkdir -p /var/home/inhumano
         
-        # Registrar el usuario en el sistema con Fish por defecto
+        # Registrar tu cuenta con Fish por defecto
         useradd -d /var/home/inhumano -M -G wheel -s /usr/bin/fish inhumano
         
-        # Configurar la contraseña temporal '1234'
+        # Inyectar tu contraseña temporal '1234'
         echo "inhumano:1234" | chpasswd
         
-        # Asignar los permisos del esqueleto del sistema a su nueva casa
+        # Clonar las configuraciones básicas a tu casa y reparar permisos de administrador
         cp -r /etc/skel/. /var/home/inhumano/
         chown -R inhumano:inhumano /var/home/inhumano
         chmod 700 /var/home/inhumano
         
-        # Forzar a Fish como la shell de useradd global
+        # Cambiar el esqueleto global de la terminal a Fish
         sed -i 's/\/bin\/bash/\/usr\/bin\/fish/g' /etc/default/useradd
