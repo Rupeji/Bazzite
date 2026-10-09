@@ -7,41 +7,29 @@ base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: stable
 
 modules:
-  # 1. REPOSITORIOS: Habilitamos las fuentes Copr
+  # 1. REPOSITORIOS: Habilitamos las fuentes Copr oficiales
   - type: copr
     repos:
       - theblackdon/kineticwe
       - lionheartp/Hyprland
 
-  # 2. EL REEMPLAZO (Sintaxis Oficial de BlueBuild):
-  # Indicamos al sistema de qué repositorio Copr provienen los reemplazos de KWin
-  - type: rpm-ostree
-    replace:
-      - from-repo: copr:copr.fedorainfracloud.org:theblackdon:kineticwe
-        packages:
-          - kwin
-          - kwin-common
-          - kwin-libs
-          - kglobalacceld
-          - kdecoration
+  # 2. EL REEMPLAZO VIA SCRIPT: Sustitución de KWin por KineticWE sin romper dependencias
+  - type: script
+    scripts:
+      - |
+        #!/usr/bin/env bash
+        set -ox pipefail
+        rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:theblackdon:kineticwe kwin kwin-common kwin-libs kglobalacceld kdecoration
 
-  # 3. PURGA DE BAZZITE
-  - type: rpm-ostree
-    remove:
-      - bazzite-portal
-      - bazzite-updater
-
-  # 4. INSTALACIÓN NATIVA
+  # 3. INSTALACIÓN NATIVA: Solo las herramientas de interfaz y terminal esenciales
   - type: rpm-ostree
     install:
-      - noctalia
-      - kitty
-      - fish
-      - dolphin
-      - obs-studio
-      - discord
+      - noctalia   # La shell oficial de mosaico (tiling)
+      - kitty      # Terminal por GPU
+      - fish       # Shell interactiva
+      - dolphin    # Administrador de archivos
 
-  # 5. CONFIGURACIÓN: Forzar a Fish como shell predeterminada
+  # 4. CONFIGURACIÓN: Forzar a Fish como shell predeterminada
   - type: script
     scripts:
       - |
