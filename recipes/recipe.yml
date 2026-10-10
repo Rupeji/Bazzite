@@ -26,7 +26,6 @@ modules:
         # 1.4 Instalamos las aplicaciones estéticas complementarias en las capas
         rpm-ostree install kitty fish dolphin mpvpaper
         '
-
   # 2. CONFIGURACIÓN DEL ESQUELETO PRE-INICIO PERSISTENTE
   - type: script
     snippets:
