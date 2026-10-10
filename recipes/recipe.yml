@@ -1,13 +1,20 @@
-# EL FUTURO PLANO ATÓMICO CON RENDIMIENTO CACHYOS (SIN FANTASMAS DE KDE)
-base-image: ghcr.io/cachyos/cachyos-bootc   # <--- Buscaremos la etiqueta oficial de CachyOS para bootc
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+version: 1
+name: cachyos-kineticwe
+description: Estructura de auditoría pura de CachyOS optimizada con entorno de mosaico dinámico.
+
+base-image: ghcr.io/cachyos/cachyos-bootc
 image-version: latest
 
 modules:
+  # 1. INYECCIÓN DEL ENTORNO GRAFICO SOBRE LIENZO VACÍO
   - type: script
     snippets:
       - |
         bash -c '
-        # 1. Al ser Cachy/Arch, la instalación se hace con pacman de forma nativa y sin overrides
-        # 2. Inyectamos los repos de Don y descargamos el entorno limpio desde cero
-        pacman -Syu --noconfirm kineticwe noctalia kitty fish dolphin mpvpaper
+        # 1.1 Sincronizamos las bases de datos optimizadas de pacman de CachyOS
+        pacman -Syu --noconfirm
+        
+        # 1.2 Instalamos el stack limpio desde cero (Sin paneles fantasmas de KDE estorbando)
+        pacman -S --noconfirm kineticwe noctalia kitty fish dolphin mpvpaper
         '
