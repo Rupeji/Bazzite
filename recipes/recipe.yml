@@ -26,16 +26,24 @@ modules:
         # 1.4 Instalamos las aplicaciones estéticas complementarias en las capas
         rpm-ostree install kitty fish dolphin mpvpaper
         '
-  # 2. CONFIGURACIÓN DEL ESQUELETO PRE-INICIO PERSISTENTE
+
+
+  # 2. INYECCIÓN DE USUARIO ESTÁNDAR COMPILADA POR BASH (SIN HASHES ROTOS)
   - type: script
     snippets:
       - |
         bash -c '
-        # 2.1 Usamos el /etc/skel REAL (El que Fedora clona al crear usuarios físicamente)
-        mkdir -p /etc/skel/.config/kitty
-        mkdir -p /etc/skel/.config/fish
-        echo "set -g fish_greeting" > /etc/skel/.config/fish/config.fish
+        # Creamos la casa física en la raíz temporal
+        mkdir -p /var/home/inhumano
         
-        # 2.2 Forzar a Fish como la shell predeterminada para cualquier usuario nuevo
-        sed -i "s/\/bin\/bash/\/usr\/bin\/fish/g" /etc/default/useradd
+        # Forzamos la creación del usuario con comandos puros de Linux
+        useradd -d /var/home/inhumano -M -G wheel -s /usr/bin/fish inhumano
+        
+        # El secreto: Le metemos una contraseña limpia en texto plano que la nube SÍ procesa
+        echo "inhumano:1234" | chpasswd
+        
+        # Le damos los permisos obligatorios para que no rebote al entrar
+        cp -r /etc/skel/. /var/home/inhumano/
+        chown -R inhumano:inhumano /var/home/inhumano
+        chmod 700 /var/home/inhumano
         '
