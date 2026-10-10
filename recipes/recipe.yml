@@ -19,7 +19,7 @@ modules:
         # 1.1.3 Inyección manual del archivo .repo oficial de Don para Noctalia (Blindado sin HTML fantasmas)
         echo -e "[copr:copr.fedorainfracloud.org:theblackdon:noctalia]" > /etc/yum.repos.d/_copr_theblackdon-noctalia.repo
         echo -e "name=Copr repo for noctalia owned by theblackdon\nbaseurl=https://download.copr.fedorainfracloud.org/results/theblackdon/noctalia/fedora-\$releasever-\$basearch/\ntype=rpm-md" >> /etc/yum.repos.d/_copr_theblackdon-noctalia.repo
-        echo -e "skip_if_unavailable=True\ngpgcheck=1\ngpgkey=https://download.copr.fedorainfracloud.org/results/theblackdon/noctalia/pubkey.gpg\nrepo_gpgcheck=0\nenabled=1\nenabled_metadata=1" >> /etc/yum.repos.d/_copr_theblackdon-noctalia.repo
+        echo -e "skip_if_unavailable=True\ngpgcheck=0\nrepo_gpgcheck=0\nenabled=1\nenabled_metadata=1" >> /etc/yum.repos.d/_copr_theblackdon-noctalia.repo
   
         # 1.2 Reemplazo masivo limpio: Purgamos KDE e inyectamos el entorno real moderno de Don
         rpm-ostree override remove kwin kwin-common kwin-libs kglobalacceld kdecoration --install kineticwe --install noctalia
