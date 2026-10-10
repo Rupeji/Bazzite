@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://blue-build.org
 version: 1
 name: bazzite-kineticwe
-description: Versión definitiva con entorno KineticWE forzado sin bloqueos de dependencias y aprovisionamiento correcto de usuarios.
+description: Versión definitiva con entorno KineticWE, Noctalia real y aprovisionamiento persistente de directorios de usuario.
 
 base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: stable
@@ -19,28 +19,34 @@ modules:
         rpm-ostree override remove kdecoration kglobalacceld
         
         # 1.3 EL REEMPLAZO EFECTIVO: Forzamos la sustitución completa de kwin-common usando el paquete de Copr
-        # Esto soluciona de raíz el conflicto de "obsoletes" sin usar flags de DNF inexistentes
         rpm-ostree override replace --from repo=copr:copr.fedorainfracloud.org:theblackdon:kineticwe kwin-common
         
-        # 1.4 Instalar el resto de tu ecosistema personalizado de una sola vez
-        rpm-ostree install --allow-inactive noctalia kineticwe kitty fish dolphin mpvpaper
+        # 1.4 INSTALACIÓN REAL: Añadimos los paquetes verificados de Noctalia y las aplicaciones base
+        rpm-ostree install kineticwe noctalia-shell noctalia-git kitty fish dolphin mpvpaper
 
-  # 2. INYECCIÓN NATIVA DE CONFIGURACIÓN DE SISTEMA (SYSTEMD-SYSUSERS & CONFIGS)
+  # 2. PROVISIÓN ATÓMICA DE USUARIO Y CONFIGURACIÓN DE CARPETAS PERSISTENTES
   - type: script
     snippets:
       - |
-        # 2.1 Definir el usuario de forma nativa para que se cree al primer arranque
+        # 2.1 Configurar el esqueleto maestro global del sistema en /usr/etc/skel
+        # Todo lo que pongas aquí se copiará AUTOMÁTICAMENTE a /var/home/inhumano al arrancar por primera vez
+        mkdir -p /usr/etc/skel/.config/kitty
+        mkdir -p /usr/etc/skel/.config/fish
+        
+        # Ejemplo de dotfile básico: Forzar que Fish sea la shell por defecto del esqueleto
+        echo "set -g fish_greeting" > /usr/etc/skel/.config/fish/config.fish
+        
+        # 2.2 Registrar la cuenta del usuario de forma nativa para el primer arranque
         mkdir -p /usr/lib/sysusers.d
         echo "u inhumano - \"Usuario Inhumano\" /var/home/inhumano /usr/bin/fish" > /usr/lib/sysusers.d/inhumano.conf
         
-        # 2.2 Asignar grupo administrador (wheel) de forma automática
-        mkdir -p /usr/lib/group.d
+        # 2.3 Asignar el grupo wheel (administrador) de forma automática
         echo "m inhumano wheel" >> /usr/lib/sysusers.d/inhumano.conf
         
-        # 2.3 Forzar que la shell por defecto para nuevos usuarios manuales sea Fish
+        # 2.4 Cambiar la shell por defecto global del instalador tradicional a Fish
         sed -i 's/\/bin\/bash/\/usr\/bin\/fish/g' /etc/default/useradd
         
-        # 2.4 Pre-configurar el hash de la contraseña '1234' de forma segura
+        # 2.5 Inyectar el hash de seguridad de la contraseña temporal '1234'
         mkdir -p /etc/shadow.d
         echo 'inhumano:$6$rounds=4096$saltstringsaltst$7MvH7WlB8Bv3Wz85H9YEx5eEclM191WpAEvA6K1oH5mYy.8u7y6IeT1oAdf3nN6HclAex8B.b06M7h/vX9Yh0.:19500:0:99999:7:::' > /etc/shadow.d/inhumano.conf
         chmod 600 /etc/shadow.d/inhumano.conf
