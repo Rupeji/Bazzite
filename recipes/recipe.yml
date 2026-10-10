@@ -7,19 +7,21 @@ base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: stable
 
 modules:
-  # 1. ENTORNO BASH SEGURO PARA ENLAZAR REPOSITORIOS E INSTALAR
+  # 1. TRANSMUTACIÓN ATÓMICA DE PANTALLA (EL MÉTODO OFICIAL DE DON)
   - type: script
     snippets:
       - |
         bash -c '
-        # 1. Descargar los ficheros .repo corregidos de Don
-        curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://copr.fedorainfracloud.org/coprs/theblackdon/kineticwe/repo/fedora-44/theblackdon-kineticwe.repo
+        # 1. Enlazar los repositorios híbridos oficiales de la comunidad
         curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland.repo
+        curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://copr.fedorainfracloud.org/coprs/theblackdon/kineticwe/repo/fedora-44/theblackdon-kineticwe.repo
         
-        # 2. EL TRUCO REAL: Forzar la instalación de KineticWE diciéndole a rpm-ostree que ignore los paquetes duplicados del sistema base
-        rpm-ostree install --allow-inactive --idoption=split-provides noctalia kineticwe kitty fish dolphin mpvpaper
+        # 2. Reemplazo masivo: Purgamos los motores de KDE e inyectamos el entorno de mosaico de una sola vez
+        rpm-ostree override remove kwin kwin-common kwin-libs kglobalacceld kdecoration --install kineticwe --install noctalia
+        
+        # 3. Instalamos las aplicaciones estéticas complementarias en las capas
+        rpm-ostree install kitty fish dolphin mpvpaper
         '
-
   # 2. BLOQUE SEGURO DE CREACIÓN DE TU CASA /VAR/HOME/INHUMANO
   - type: script
     snippets:
