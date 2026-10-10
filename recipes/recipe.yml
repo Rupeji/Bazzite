@@ -7,16 +7,20 @@ base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: stable
 
 modules:
-  # 1. TRANSMUTACIÓN ATÓMICA DE PANTALLA (CON REPOS OFICIALES DE DON SIN DUPLICADOS)
+  # 1. TRANSMUTACIÓN ATÓMICA DE PANTALLA (CON REPOS A PRUEBA DE BALAS)
   - type: script
     snippets:
       - |
         bash -c '
-        # 1.1 Enlazar los repositorios híbridos oficiales de Don (Sufijo fedora-44 real)
+        # 1.1 Enlazar los repositorios híbridos oficiales de la comunidad (Con inyección directa manual)
         curl -Lo /etc/yum.repos.d/_copr_lionheartp-Hyprland.repo https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland.repo
         curl -Lo /etc/yum.repos.d/_copr_theblackdon-kineticwe.repo https://copr.fedorainfracloud.org/coprs/theblackdon/kineticwe/repo/fedora-44/theblackdon-kineticwe-fedora-44.repo
-        curl -Lo /etc/yum.repos.d/_copr_theblackdon-noctalia.repo https://copr.fedorainfracloud.org/coprs/theblackdon/noctalia/repo/fedora-44/theblackdon-noctalia.repo
         
+        # 1.1.3 Inyección manual del archivo .repo oficial de Don para Noctalia (Blindado sin HTML fantasmas)
+        echo -e "[copr:copr.fedorainfracloud.org:theblackdon:noctalia]" > /etc/yum.repos.d/_copr_theblackdon-noctalia.repo
+        echo -e "name=Copr repo for noctalia owned by theblackdon\nbaseurl=https://download.copr.fedorainfracloud.org/results/theblackdon/noctalia/fedora-\$releasever-\$basearch/\ntype=rpm-md" >> /etc/yum.repos.d/_copr_theblackdon-noctalia.repo
+        echo -e "skip_if_unavailable=True\ngpgcheck=1\ngpgkey=https://download.copr.fedorainfracloud.org/results/theblackdon/noctalia/pubkey.gpg\nrepo_gpgcheck=0\nenabled=1\nenabled_metadata=1" >> /etc/yum.repos.d/_copr_theblackdon-noctalia.repo
+  
         # 1.2 Reemplazo masivo limpio: Purgamos KDE e inyectamos el entorno real moderno de Don
         rpm-ostree override remove kwin kwin-common kwin-libs kglobalacceld kdecoration --install kineticwe --install noctalia
         
