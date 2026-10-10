@@ -3,8 +3,9 @@ version: 1
 name: cachyos-kineticwe
 description: Estructura de auditoría pura de Arch Linux optimizada con el entorno de Don.
 
-base-image: ghcr.io/bootcrew/mono   # <--- La base atómica de Arch real e inmune (Une los espacios de abajo)
-image-version: arch
+base-image: ghcr.io/bootcrew/arch-bootc   # <--- La base atómica de Arch real e inmune (Une los espacios de abajo)
+image-version: latest
+
 
 modules:
   # 1. INYECCIÓN DEL ENTORNO GRAFICO SOBRE LIENZO VACÍO
