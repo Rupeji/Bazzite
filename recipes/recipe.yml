@@ -1,10 +1,10 @@
-# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+# yaml-language-server: $schema=https://blue-build.org
 version: 1
 name: cachyos-kineticwe
-description: Estructura de auditoría pura de CachyOS optimizada con entorno de mosaico dinámico.
+description: Estructura de auditoría pura de Arch Linux optimizada con el entorno de Don.
 
-base-image: ghcr.io/cachyos/cachyos-bootc
-image-version: latest
+base-image: ghcr.io/bootcrew/mono   # <--- La base atómica de Arch real e inmune (Une los espacios de abajo)
+image-version: arch
 
 modules:
   # 1. INYECCIÓN DEL ENTORNO GRAFICO SOBRE LIENZO VACÍO
@@ -12,9 +12,9 @@ modules:
     snippets:
       - |
         bash -c '
-        # 1.1 Sincronizamos las bases de datos optimizadas de pacman de CachyOS
+        # 1.1 Sincronizamos las bases de datos nativas de pacman
         pacman -Syu --noconfirm
         
-        # 1.2 Instalamos el stack limpio desde cero (Sin paneles fantasmas de KDE estorbando)
+        # 1.2 Inyectamos el ecosistema de Don sobre el sistema limpio (Sin KDE fantasmas)
         pacman -S --noconfirm kineticwe noctalia kitty fish dolphin mpvpaper
         '
