@@ -18,7 +18,7 @@ modules:
         
         # 1.2 EL COMANDO MAESTRO CORREGIDO: Reemplazo real sin opciones desconocidas
         # Removemos KWin clásico e instalamos kineticwe y noctalia en una transacción limpia
-        rpm-ostree override remove kwin kwin-common kwin-libs kglobalacceld ddecoration --install kineticwe --install noctalia-shell-v5
+        rpm-ostree override remove kwin kwin-common kwin-libs kglobalacceld kdecoration --install kineticwe --install noctalia-shell-v5
         
         # 1.3 Aplicaciones estéticas complementarias de fábrica
         rpm-ostree install kitty fish dolphin mpvpaper
